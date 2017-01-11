@@ -1,6 +1,6 @@
 # RosImuTopic2Matlab
 
-This matlab function reads a text file that contains the IMU data. The text file is generated with ROS.
+This Matlab function reads a text file that contains the IMU data. The text file is generated with ROS.
 
 This is an example how to generate such a text file from a ROS bag.
 > rostopic echo -b rosbag_data.bag /imu/data > imu_data.txt

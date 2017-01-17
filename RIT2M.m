@@ -33,17 +33,16 @@ function [ imuTimeStamp, imuOrientation, imuAngVelocity, imuLimAcc ]...
         
         nbLines = length(msgLines);
         imuDataPtr = 1;
-        secs = '';
         
         % Treat the message's lines one after the other
         for j = 1:nbLines
             line = strrep(msgLines{j}, ' ', '');
             if( (imuDataPtr == 1) && (contains(line,'secs:')) )
-                secs = strrep(line, 'secs:', '');
+                imuData(i,1) = str2double(strrep(line, 'secs:', ''));
                 imuDataPtr = 2;
             elseif( (imuDataPtr == 2) && (contains(line,'nsecs:')) )
                 nsecs = strrep(line, 'nsecs:', '');
-                imuData(i,1) = str2double([secs '.' nsecs]);
+                imuData(i,1) = imuData(i,1) + (str2double(nsecs)*1e-9);
                 imuDataPtr = 3;
             elseif( (imuDataPtr == 3) && (contains(line,'orientation:')) )
                 imuDataPtr = 4;

@@ -16,7 +16,7 @@
 %       acceleration x, y, z
 
 
-function [ imuTimeStamp, imuOrientation, imuAngVelocity, imuLimAcc ]...
+function [ imuTimeStamp, imuOrientation, imuAngVelocity, imuLinAcc ]...
     = RIT2M( inputPath, outputPath )
 
     textRead = fileread( inputPath );
@@ -95,11 +95,11 @@ function [ imuTimeStamp, imuOrientation, imuAngVelocity, imuLimAcc ]...
     imuTimeStamp = imuData(:,1);
     imuOrientation = imuData(:,2:5);
     imuAngVelocity = imuData(:,6:8);
-    imuLimAcc = imuData(:,9:11);
+    imuLinAcc = imuData(:,9:11);
     
     if nargin() == 2
         save(outputPath, 'imuTimeStamp', 'imuOrientation',...
-            'imuAngVelocity', 'imuLimAcc');
+            'imuAngVelocity', 'imuLinAcc');
     end;
     
     

@@ -16,8 +16,9 @@
 %       acceleration x, y, z
 
 
-function [ imuTimeStamp, imuOrientation, imuAngVelocity, imuLinAcc ]...
-    = RIT2M( inputPath, outputPath )
+function [ imuTimeStamp, imuOrientation, imuAngVelocity, imuLinAcc,...
+    imuFreq, firstImuSec, firstImuNSec, imuRelativeTime ]...
+        = RIT2M( inputPath, outputPath )
 
     textRead = fileread( inputPath );
     
@@ -39,10 +40,20 @@ function [ imuTimeStamp, imuOrientation, imuAngVelocity, imuLinAcc ]...
             line = strrep(msgLines{j}, ' ', '');
             if( (imuDataPtr == 1) && (contains(line,'secs:')) )
                 imuData(i,1) = str2double(strrep(line, 'secs:', ''));
+                if i == 1
+                    firstImuSec = imuData(i,1);
+                elseif i == nbMsgs
+                    lastImuSec = imuData(i,1);
+                end;
                 imuDataPtr = 2;
             elseif( (imuDataPtr == 2) && (contains(line,'nsecs:')) )
                 nsecs = strrep(line, 'nsecs:', '');
                 imuData(i,1) = imuData(i,1) + (str2double(nsecs)*1e-9);
+                if i == 1
+                    firstImuNSec = str2double(nsecs);
+                elseif i == nbMsgs
+                    lastImuNSec = str2double(nsecs);
+                end;
                 imuDataPtr = 3;
             elseif( (imuDataPtr == 3) && (contains(line,'orientation:')) )
                 imuDataPtr = 4;
@@ -97,9 +108,16 @@ function [ imuTimeStamp, imuOrientation, imuAngVelocity, imuLinAcc ]...
     imuAngVelocity = imuData(:,6:8);
     imuLinAcc = imuData(:,9:11);
     
+    secDiff = lastImuSec - firstImuSec;
+    nSecDiff = lastImuNSec - firstImuNSec;
+    imuFreq = nbMsgs/...
+        ( secDiff + (nSecDiff*1e-9));
+    imuRelativeTime = (0:(nbMsgs-1))/imuFreq;
+    
     if nargin() == 2
         save(outputPath, 'imuTimeStamp', 'imuOrientation',...
-            'imuAngVelocity', 'imuLinAcc');
+            'imuAngVelocity', 'imuLinAcc', 'imuFreq',...
+            'firstImuSec', 'firstImuNSec', 'imuRelativeTime');
     end;
     
     
